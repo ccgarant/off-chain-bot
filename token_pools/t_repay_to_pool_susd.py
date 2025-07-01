@@ -14,8 +14,8 @@ def process_repay_to_pool_box(pool, box, latest_tx):
     try:
         assets_to_give = box["assets"][1]["amount"]
         final_borrowed = borrowed - int(box["assets"][0]["amount"])
-    except (IndexError, KeyError, TypeError) as e:
-        logger.error(f"Error accessing box assets in repay to pool (SUSD): {e}. Box: {box}")
+    except (IndexError, KeyError, TypeError, ValueError) as e:
+        logger.error(f"[Repay to Pool SUSD] Error accessing box assets: {e}. Transaction ID: {box.get('transactionId', 'unknown')}, Box: {box}")
         return None
 
     transaction_to_sign = \

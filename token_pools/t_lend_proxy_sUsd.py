@@ -15,8 +15,8 @@ def process_lend_proxy_box(pool, box, latest_tx):
         if box["assets"][0]["tokenId"] != pool["CURRENCY_ID"]:
             return latest_tx
         token_amount = box["assets"][0]["amount"]
-    except (IndexError, KeyError, TypeError) as e:
-        logger.error(f"Error accessing box assets in lend proxy (SUSD): {e}. Box: {box}")
+    except (IndexError, KeyError, TypeError, ValueError) as e:
+        logger.error(f"[Lend Proxy SUSD] Error accessing box assets: {e}. Transaction ID: {box.get('transactionId', 'unknown')}, Box: {box}")
         return None
     pool_box, borrowed = latest_pool_info(pool, latest_tx)
 

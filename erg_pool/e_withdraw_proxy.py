@@ -16,8 +16,8 @@ def process_withdraw_proxy_box(pool, box, latest_tx):
 
     try:
         user_gives = box["assets"][0]["amount"]
-    except (IndexError, KeyError, TypeError) as e:
-        logger.error(f"Error accessing box assets in withdraw proxy: {e}. Box: {box}")
+    except (IndexError, KeyError, TypeError, ValueError) as e:
+        logger.error(f"[Withdraw Proxy] Error accessing box assets: {e}. Transaction ID: {box.get('transactionId', 'unknown')}, Box: {box}")
         return None
 
     held_erg0 = erg_pool_box["value"]

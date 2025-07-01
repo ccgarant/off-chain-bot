@@ -15,8 +15,8 @@ def process_withdraw_proxy_box(pool, box, latest_tx):
         if box["assets"][0]["tokenId"] != pool["LEND_TOKEN"]:
             return latest_tx
         user_gives = box["assets"][0]["amount"]
-    except (IndexError, KeyError, TypeError) as e:
-        logger.error(f"Error accessing box assets in withdraw proxy (SUSD): {e}. Box: {box}")
+    except (IndexError, KeyError, TypeError, ValueError) as e:
+        logger.error(f"[Withdraw Proxy SUSD] Error accessing box assets: {e}. Transaction ID: {box.get('transactionId', 'unknown')}, Box: {box}")
         return None
     pool_box, borrowed = latest_pool_info(pool, latest_tx)
 

@@ -14,8 +14,8 @@ def process_repay_to_pool_box(pool, box, latest_tx):
     erg_to_give = box["value"] - TX_FEE
     try:
         final_borrowed = borrowed - int(box["assets"][0]["amount"])
-    except (IndexError, KeyError, TypeError) as e:
-        logger.error(f"Error accessing box assets in repay to pool: {e}. Box: {box}")
+    except (IndexError, KeyError, TypeError, ValueError) as e:
+        logger.error(f"[Repay to Pool] Error accessing box assets: {e}. Transaction ID: {box.get('transactionId', 'unknown')}, Box: {box}")
         return None
 
     transaction_to_sign = \
