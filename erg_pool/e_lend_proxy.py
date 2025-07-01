@@ -7,7 +7,7 @@ from helpers.job_helpers import job_processor, latest_pool_info
 from helpers.node_calls import tree_to_address, box_id_to_binary, sign_tx
 from helpers.platform_functions import calculate_final_amount, get_pool_param_box
 from logger import set_logger
-from helpers.terminal_links import make_terminal_link
+from helpers.terminal_link import make_terminal_link
 
 logger = set_logger(__name__)
 
