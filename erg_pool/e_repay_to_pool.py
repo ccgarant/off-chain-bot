@@ -10,12 +10,23 @@ logger = set_logger(__name__)
 
 def process_repay_to_pool_box(pool, box, latest_tx):
     erg_pool_box, borrowed = latest_pool_info(pool, latest_tx)
-
     erg_to_give = box["value"] - TX_FEE
+
+    box_id = box.get('boxId', 'unknown')
+    transaction_id = box.get('transactionId', 'unknown')
+    explorer_url = f"https://ergexplorer.com/boxes#{box_id}" if box_id != 'unknown' else None
+
+    if "assets" not in box or not box["assets"]:
+        if explorer_url:
+            logger.error(f"[Repay to Pool] Box has no assets. Transaction ID: {transaction_id}, Box ID: {box_id}. Check the box on Erg Explorer: {explorer_url}. If this persists, verify the bot's configuration or contact Duckpools support on Discord.")
+        else:
+            logger.error(f"[Repay to Pool] Box has no assets. Transaction ID: {transaction_id}, Box ID: unknown. Unable to provide Erg Explorer link. Please verify the bot's configuration or contact Duckpools support on Discord.")
+        return None
+
     try:
         final_borrowed = borrowed - int(box["assets"][0]["amount"])
-    except (IndexError, KeyError, TypeError, ValueError) as e:
-        logger.error(f"[Repay to Pool] Error accessing box assets: {e}. Transaction ID: {box.get('transactionId', 'unknown')}, Box: {box}")
+    except (ValueError, TypeError) as e:
+        logger.error(f"[Repay to Pool] Invalid asset amount: {e}. Transaction ID: {transaction_id}, Box ID: {box_id}. Check the box on Erg Explorer: {explorer_url}. If this persists, contact Duckpools support on Discord.")
         return None
 
     transaction_to_sign = \

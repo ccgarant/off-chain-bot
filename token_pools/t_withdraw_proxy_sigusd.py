@@ -11,12 +11,23 @@ logger = set_logger(__name__)
 
 
 def process_withdraw_proxy_box(pool, box, latest_tx):
+    box_id = box.get('boxId', 'unknown')
+    transaction_id = box.get('transactionId', 'unknown')
+    explorer_url = f"https://ergexplorer.com/boxes#{box_id}" if box_id != 'unknown' else None
+
+    if "assets" not in box or not box["assets"]:
+        if explorer_url:
+            logger.error(f"[Withdraw Proxy SUSD] Box has no assets. Transaction ID: {transaction_id}, Box ID: {box_id}. Check the box on Erg Explorer: {explorer_url}. If this persists, verify the bot's configuration or contact Duckpools support on Discord.")
+        else:
+            logger.error(f"[Withdraw Proxy SUSD] Box has no assets. Transaction ID: {transaction_id}, Box ID: unknown. Unable to provide Erg Explorer link. Please verify the bot's configuration or contact Duckpools support on Discord.")
+        return None
+
     try:
         if box["assets"][0]["tokenId"] != pool["LEND_TOKEN"]:
             return latest_tx
         user_gives = box["assets"][0]["amount"]
-    except (IndexError, KeyError, TypeError, ValueError) as e:
-        logger.error(f"[Withdraw Proxy SUSD] Error accessing box assets: {e}. Transaction ID: {box.get('transactionId', 'unknown')}, Box: {box}")
+    except (ValueError, TypeError) as e:
+        logger.error(f"[Withdraw Proxy SUSD] Invalid asset amount: {e}. Transaction ID: {transaction_id}, Box ID: {box_id}. Check the box on Erg Explorer: {explorer_url}. If this persists, contact Duckpools support on Discord.")
         return None
     pool_box, borrowed = latest_pool_info(pool, latest_tx)
 
