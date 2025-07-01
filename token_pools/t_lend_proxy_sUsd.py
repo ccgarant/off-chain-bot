@@ -11,11 +11,15 @@ logger = set_logger(__name__)
 
 
 def process_lend_proxy_box(pool, box, latest_tx):
-    if box["assets"][0]["tokenId"] != pool["CURRENCY_ID"]:
-        return latest_tx
+    try:
+        if box["assets"][0]["tokenId"] != pool["CURRENCY_ID"]:
+            return latest_tx
+        token_amount = box["assets"][0]["amount"]
+    except (IndexError, KeyError, TypeError) as e:
+        logger.error(f"Error accessing box assets in lend proxy (SUSD): {e}. Box: {box}")
+        return None
     pool_box, borrowed = latest_pool_info(pool, latest_tx)
 
-    token_amount = box["assets"][0]["amount"]
     service_fee = max(calculate_final_amount(token_amount, pool["thresholds"]), 1)
     assets_to_give = token_amount - service_fee
     held_tokens = int(pool_box["assets"][1]["amount"])

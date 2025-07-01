@@ -11,13 +11,17 @@ logger = set_logger(__name__)
 
 
 def process_withdraw_proxy_box(pool, box, latest_tx):
-    if box["assets"][0]["tokenId"] != pool["LEND_TOKEN"]:
-        return latest_tx
+    try:
+        if box["assets"][0]["tokenId"] != pool["LEND_TOKEN"]:
+            return latest_tx
+        user_gives = box["assets"][0]["amount"]
+    except (IndexError, KeyError, TypeError) as e:
+        logger.error(f"Error accessing box assets in withdraw proxy (SUSD): {e}. Box: {box}")
+        return None
     pool_box, borrowed = latest_pool_info(pool, latest_tx)
 
     held_erg0 = pool_box["assets"][3]["amount"]
     held_tokens = int(pool_box["assets"][1]["amount"])
-    user_gives = box["assets"][0]["amount"]
     circulating_tokens = int(9000000000000010 - held_tokens)
     final_circulating = circulating_tokens - user_gives
     held_erg1 = ceil(final_circulating * (held_erg0 + borrowed) / circulating_tokens - borrowed) + 1
