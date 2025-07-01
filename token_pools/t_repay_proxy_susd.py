@@ -49,10 +49,10 @@ def refund_repay_proxy_box(box):
         tx_link = make_terminal_link(tx_url, transaction_id) if tx_url else transaction_id
         logger.warning(
             f"Failed to process or refund transaction.\n"
-            f"- Transaction ID: {tx_link}\n"
-            f"- Box ID: {box_link}\n"
-            f"- Refund txID: -1\n"
-            f"- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
+            f"\t- Transaction ID: {tx_link}\n"
+            f"\t- Box ID: {box_link}\n"
+            f"\t- Refund txID: -1\n"
+            f"\t- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
         )
         logger.debug(f"Full transaction object: {transaction_to_sign}")
         return latest_tx
