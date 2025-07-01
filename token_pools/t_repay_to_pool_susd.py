@@ -4,14 +4,10 @@ from consts import MIN_BOX_VALUE, MAX_BORROW_TOKENS, TX_FEE
 from helpers.job_helpers import latest_pool_info, job_processor
 from helpers.node_calls import box_id_to_binary, sign_tx
 from logger import set_logger
+from helpers.terminal_link import make_terminal_link
 
 logger = set_logger(__name__)
 
-
-def make_terminal_link(url, text=None):
-    if not text:
-        text = url
-    return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
 
 def process_repay_to_pool_box(pool, box, latest_tx):
     pool_box, borrowed = latest_pool_info(pool, latest_tx)

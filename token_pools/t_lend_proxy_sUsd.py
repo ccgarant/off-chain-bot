@@ -6,14 +6,10 @@ from helpers.job_helpers import latest_pool_info, job_processor
 from helpers.node_calls import tree_to_address, box_id_to_binary, sign_tx, current_height
 from helpers.platform_functions import calculate_final_amount, get_pool_param_box
 from logger import set_logger
+from helpers.terminal_link import make_terminal_link
 
 logger = set_logger(__name__)
 
-
-def make_terminal_link(url, text=None):
-    if not text:
-        text = url
-    return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
 
 def process_lend_proxy_box(pool, box, latest_tx):
     box_id = box.get('boxId', 'unknown')
