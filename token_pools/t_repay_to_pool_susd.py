@@ -8,6 +8,11 @@ from logger import set_logger
 logger = set_logger(__name__)
 
 
+def make_terminal_link(url, text=None):
+    if not text:
+        text = url
+    return f"\033]8;;{url}\033\\{text}\033]8;;\033\\"
+
 def process_repay_to_pool_box(pool, box, latest_tx):
     pool_box, borrowed = latest_pool_info(pool, latest_tx)
     box_id = box.get('boxId', 'unknown')
@@ -16,16 +21,36 @@ def process_repay_to_pool_box(pool, box, latest_tx):
 
     if "assets" not in box or len(box["assets"]) < 2:
         if explorer_url:
-            logger.error(f"[Repay to Pool SUSD] Box has insufficient assets. Transaction ID: {transaction_id}, Box ID: {box_id}. Check the box on Erg Explorer: {explorer_url}. If this persists, verify the bot's configuration or contact Duckpools support on Discord.")
+            link = make_terminal_link(explorer_url, "Erg Explorer")
+            logger.error(
+                f"[Repay to Pool SUSD] Box has insufficient assets.\n"
+                f"- Transaction ID: {transaction_id}\n"
+                f"- Box ID: {box_id}\n"
+                f"- Check the box on {link}\n"
+                f"- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
+            )
         else:
-            logger.error(f"[Repay to Pool SUSD] Box has insufficient assets. Transaction ID: {transaction_id}, Box ID: unknown. Unable to provide Erg Explorer link. Please verify the bot's configuration or contact Duckpools support on Discord.")
+            logger.error(
+                f"[Repay to Pool SUSD] Box has insufficient assets.\n"
+                f"- Transaction ID: {transaction_id}\n"
+                f"- Box ID: unknown\n"
+                f"- Unable to provide Erg Explorer link.\n"
+                f"- Please verify the bot's configuration or contact Duckpools support on Discord.\n"
+            )
         return None
 
     try:
         assets_to_give = box["assets"][1]["amount"]
         final_borrowed = borrowed - int(box["assets"][0]["amount"])
     except (ValueError, TypeError) as e:
-        logger.error(f"[Repay to Pool SUSD] Invalid asset amount: {e}. Transaction ID: {transaction_id}, Box ID: {box_id}. Check the box on Erg Explorer: {explorer_url}. If this persists, contact Duckpools support on Discord.")
+        link = make_terminal_link(explorer_url, "Erg Explorer") if explorer_url else "(no link)"
+        logger.error(
+            f"[Repay to Pool SUSD] Invalid asset amount: {e}.\n"
+            f"- Transaction ID: {transaction_id}\n"
+            f"- Box ID: {box_id}\n"
+            f"- Check the box on {link}\n"
+            f"- If this persists, contact Duckpools support on Discord.\n"
+        )
         return None
 
     transaction_to_sign = \
