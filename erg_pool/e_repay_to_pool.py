@@ -20,37 +20,27 @@ def process_repay_to_pool_box(pool, box, latest_tx):
 
     box_id = box.get('boxId', 'unknown')
     transaction_id = box.get('transactionId', 'unknown')
-    explorer_url = f"https://ergexplorer.com/boxes#{box_id}" if box_id != 'unknown' else None
+    box_url = f"https://ergexplorer.com/boxes#{box_id}" if box_id != 'unknown' else None
+    tx_url = f"https://ergexplorer.com/transactions#{transaction_id}" if transaction_id != 'unknown' else None
+    box_link = make_terminal_link(box_url, box_id) if box_url else box_id
+    tx_link = make_terminal_link(tx_url, transaction_id) if tx_url else transaction_id
 
     if "assets" not in box or not box["assets"]:
-        if explorer_url:
-            link = make_terminal_link(explorer_url, "Erg Explorer")
-            logger.error(
-                f"[Repay to Pool] Box has no assets.\n"
-                f"- Transaction ID: {transaction_id}\n"
-                f"- Box ID: {box_id}\n"
-                f"- Check the box on {link}\n"
-                f"- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
-            )
-        else:
-            logger.error(
-                f"[Repay to Pool] Box has no assets.\n"
-                f"- Transaction ID: {transaction_id}\n"
-                f"- Box ID: unknown\n"
-                f"- Unable to provide Erg Explorer link.\n"
-                f"- Please verify the bot's configuration or contact Duckpools support on Discord.\n"
-            )
+        logger.error(
+            f"[Repay to Pool] Box has no assets, the pool wallet needs to be refilled.\n"
+            f"- Transaction ID: {tx_link}\n"
+            f"- Box ID: {box_link}\n"
+            f"- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
+        )
         return None
 
     try:
         final_borrowed = borrowed - int(box["assets"][0]["amount"])
     except (ValueError, TypeError) as e:
-        link = make_terminal_link(explorer_url, "Erg Explorer") if explorer_url else "(no link)"
         logger.error(
             f"[Repay to Pool] Invalid asset amount: {e}.\n"
-            f"- Transaction ID: {transaction_id}\n"
-            f"- Box ID: {box_id}\n"
-            f"- Check the box on {link}\n"
+            f"- Transaction ID: {tx_link}\n"
+            f"- Box ID: {box_link}\n"
             f"- If this persists, contact Duckpools support on Discord.\n"
         )
         return None
