@@ -43,12 +43,13 @@ def refund_repay_proxy_box(box):
         tx_url = f"https://ergexplorer.com/transactions#{transaction_id}" if transaction_id != 'unknown' else None
         box_link = make_terminal_link(box_url, box_id) if box_url else box_id
         tx_link = make_terminal_link(tx_url, transaction_id) if tx_url else transaction_id
+        duckpools_link = make_terminal_link("https://www.duckpools.io/", "www.duckpools.io")
         logger.warning(
             f"Failed to process or refund transaction.\n"
             f"\t- Transaction ID: {tx_link}\n"
             f"\t- Box ID: {box_link}\n"
             f"\t- Refund txID: -1\n"
-            f"\t- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
+            f"\t- If this persists, verify the bot's configuration or contact Duckpools support on Discord. Visit {duckpools_link}\n"
         )
         logger.debug(f"Full transaction object: {transaction_to_sign}")
         return latest_tx
