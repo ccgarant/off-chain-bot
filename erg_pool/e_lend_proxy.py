@@ -124,10 +124,21 @@ def process_lend_proxy_box(pool, box, latest_tx):
         if tx_id != ERROR:
             logger.info("Successfully submitted refund transaction with ID: %s",  tx_id)
         else:
-            logger.warning("Failed to process or refund transaction object: %s Failed Refund txID quoted as: %s",
-                           json.dumps(transaction_to_sign), tx_id)
-
-        return latest_tx
+            box_id = box.get('boxId', 'unknown')
+            transaction_id = box.get('transactionId', 'unknown')
+            box_url = f"https://ergexplorer.com/boxes#{box_id}" if box_id != 'unknown' else None
+            tx_url = f"https://ergexplorer.com/transactions#{transaction_id}" if transaction_id != 'unknown' else None
+            box_link = make_terminal_link(box_url, box_id) if box_url else box_id
+            tx_link = make_terminal_link(tx_url, transaction_id) if tx_url else transaction_id
+            logger.warning(
+                f"Failed to process or refund transaction.\n"
+                f"- Transaction ID: {tx_link}\n"
+                f"- Box ID: {box_link}\n"
+                f"- Refund txID: -1\n"
+                f"- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
+            )
+            logger.debug(f"Full transaction object: {transaction_to_sign}")
+            return latest_tx
     return obj
 
 
