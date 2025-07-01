@@ -21,22 +21,24 @@ def process_repay_to_pool_box(pool, box, latest_tx):
     tx_link = make_terminal_link(tx_url, transaction_id) if tx_url else transaction_id
 
     if "assets" not in box or not box["assets"]:
+        duckpools_link = make_terminal_link("https://www.duckpools.io/", "www.duckpools.io")
         logger.error(
             f"[Repay to Pool] Box has no assets, the pool wallet needs to be refilled.\n"
-            f"- Transaction ID: {tx_link}\n"
-            f"- Box ID: {box_link}\n"
-            f"- If this persists, verify the bot's configuration or contact Duckpools support on Discord.\n"
+            f"\t- Transaction ID: {tx_link}\n"
+            f"\t- Box ID: {box_link}\n"
+            f"\t- If this persists, verify the bot's configuration or contact Duckpools support on Discord. Visit {duckpools_link}\n"
         )
         return None
 
     try:
         final_borrowed = borrowed - int(box["assets"][0]["amount"])
     except (ValueError, TypeError) as e:
+        duckpools_link = make_terminal_link("https://www.duckpools.io/", "www.duckpools.io")
         logger.error(
             f"[Repay to Pool] Invalid asset amount: {e}.\n"
-            f"- Transaction ID: {tx_link}\n"
-            f"- Box ID: {box_link}\n"
-            f"- If this persists, contact Duckpools support on Discord.\n"
+            f"\t- Transaction ID: {tx_link}\n"
+            f"\t- Box ID: {box_link}\n"
+            f"\t- If this persists, contact Duckpools support on Discord. Visit {duckpools_link}\n"
         )
         return None
 
